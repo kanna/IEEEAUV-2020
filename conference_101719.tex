@@ -11,46 +11,45 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Conference Paper Title*\\
-%{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
-%should not be used}
+\title{Implementation of a system for Adaptive sampling of processes floating with the current*\\
+{\footnotesize \textsuperscript{*}Note: Working title}
 %\thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
+\author{\IEEEauthorblockN{Andreas Våge}
+\IEEEauthorblockA{\textit{Dept. of Engineering Cybernetics} \\
+\textit{NTNU}\\
+Trondheim, Norway \\
+andreas.vage@ntnu.no}
+\and
+\IEEEauthorblockN{Tor Nordam}
+\IEEEauthorblockA{\textit{Dept. of Environment and New Resources} \\
+\textit{SINTEF Ocean}\\
+Trondheim, Norway \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{Aya Saad}
+\IEEEauthorblockA{\textit{Dept. of Engineering Cybernetics} \\
+\textit{NTNU}\\
+Trondheim, Norway \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{Annette Stahl}
+\IEEEauthorblockA{\textit{Dept. of Engineering Cybernetics} \\
+\textit{NTNU}\\
+Trondheim, Norway \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{Martin Ludvigsen}
+\IEEEauthorblockA{\textit{Dept. of Marine Technology} \\
+\textit{NTNU}\\
 City, Country \\
 email address or ORCID}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
+\IEEEauthorblockN{Kanna Rajan}
+\IEEEauthorblockA{\textit{Underwater Systems and Technology Laborator} \\
+\textit{ University of Porto}\\
+Porto,  Portugal \\
 email address or ORCID}
 }
 
@@ -79,6 +78,12 @@ Earlier work on robotic adaptive sampling in the upper water column typically ig
 
 \section{Technical Description}
 
+\begin{figure}[tbp]
+\centerline{\includegraphics[width=\linewidth]{figures/workflow-simplified.png}}
+\caption{The overall control loop of the system}
+\label{fig:senseThinkActLoop}
+\end{figure}
+
 \paragraph{Short description of the imaging and classification pipeline}
 
 \paragraph{Local Current Model}
@@ -99,7 +104,7 @@ Gaussian process regression is data driven and requires very few parameters, whi
 In addition to estimate the mean predicted values (the Kriging surface) Gaussian Process regression also estimates the uncertainty, which is later used to balance exploration vs exploitation when deliberating where the AUV should go next.
 \paragraph{Objective Function}
 The objective function is calculated over the estimated GP model along the path candidate.
-It is based on three interests: 
+It is based on three interests:
 \begin{itemize}
     \item scientific interest in particular plankton classes.
     \item Exploitation: maximise expected measured concentration according to the kriging surface.
@@ -118,5 +123,6 @@ The search is made more efficient by utilising traditional survey paths as heuri
 The system has been tested and verified in simulations and on historic data. Fig.~\ref{fig:munkholmen} shows the planned path based on real data from a survey in the Trondheim fjord in April during the annual algae bloom. The planned path is maximising the expected concentration of detected algae, while also minimising the variance of the estimated Gaussian process. 
 
 The next step is to perform new experiments with the AUV operating autonomously.
-
+\section*{Acknowledgment}
+This work was supported by the Research Council of Norway through the FRINATEK/IKTPLUSS program, project number 262701.
 \end{document}
