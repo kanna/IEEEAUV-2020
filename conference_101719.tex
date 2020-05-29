@@ -49,13 +49,7 @@ Porto,  Portugal \\
 \maketitle
 
 \begin{abstract}
-\textbf{AILARON} (\textbf{A}utonomous
-\textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
-identifying pla\textbf{N}kton taxa in-situ) for upper water-column
-microbial biology
-% that images, processes, analyzes, classifies
-% plankton-based imagery in-situ in order
-to enable intelligent onboard targeted sampling.
+
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -63,8 +57,19 @@ AUV, AI, Planning, Plankton, Gaussian Process
 \end{IEEEkeywords}
 
 \section{Introduction}
+Planktonic biomass forms the fundamental food source for consumers at higher trophic levels. They play a significant role in producing more than $50\%$ of the global oxygen supply. Hence, studying their community structure, abundance, and dispersion across the ocean is a primary research concern. To avoid transferring planktonic organisms to the lab or applying ship-based point profiling as traditional approaches suggest, we propose, in this paper, a framework that aims at measuring targeted plankton taxa in-situ. 
+The framework initially identifies target taxa hotpots related to the upper water-column microbial biology. Then, it adaptively plans the tracking of the suggested hotspots for further exploration, allowing for accurate modeling of targeted biological phenomena, which is an essential task for marine biologists and the management of marine ecology.
+%Big picture stuff..
+
+\textbf{AILARON} (\textbf{A}utonomous
+\textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
+identifying pla\textbf{N}kton taxa in-situ) for upper water-column
+microbial biology that images, processes, analyzes, classifies plankton-based imagery in-situ in order
+to enable intelligent onboard targeted sampling.
 
 \section{Motivation}
+Following processes along the current in the ocean is useful..
+I.e. for AILARON it is very useful tool for biologists.. 
 
 \section{Related Work}
 Earlier work on robotic adaptive sampling in the upper water column typically models the temporal property caused by the current as noise under the assumption that the sample time-span is short enough compared to the current velocity so that the transportation is negligible or the current and the process being observed are in a stationary equilibrium.
@@ -78,13 +83,14 @@ In the AILARON project the process monitored are microbial biology in the upper 
 It continuously captures images of particles floating trough its capture volume, magnifying them while keeping them in focus over the entire capture volume.
 The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
 This stream is accumulated and interpreted as concentration measurements of the different classes with accompanying measurement variances.
-Currently only the total concentration of detected particles are used as measurements
 
-However other processes could similarly 
-The overall sense, plan and act loop is seen in \cref{fig:sensePlanActLoop}
+For now we only consider one feature at a time, i.e. the total concentration of particles, but extending the system to multiple classes is possible.
+Also other observable processes then microbial biology could be monitored with the same system. 
+
+The overall sense, plan and act loop for the AILARON project is seen in \cref{fig:sensePlanActLoop}
 
 \begin{figure}[tbp]
-\centerline{\includegraphics[width=\linewidth]{figures/workflow-simplified.png}}
+\centerline{\includegraphics[width=0.9\linewidth]{figures/workflow-simplified.png}}
 \caption{The overall control loop running on board the AUV in the AILARON project.}
 \label{fig:sensePlanActLoop}
 \end{figure}
@@ -131,7 +137,7 @@ The system has been tested and verified in simulations and on historic data. Fig
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=\linewidth]{figures/munkholmen_planned_path.png}}
 \caption{The AUV has traversed the blue path and gathered data (orange points), which has been transported with the current, and are now estimated to be located at the red points.
-The contour shows the predicted distribution for which the red path is maximising expected measured concentration and minimising model variance.}
+The contour shows the predicted concentration for which the red path is maximising expected measured concentration and minimising model variance.}
 \label{fig:munkholmen}
 \end{figure}
 
