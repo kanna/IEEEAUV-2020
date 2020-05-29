@@ -3,6 +3,7 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{cleveref}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
@@ -16,43 +17,35 @@
 %\thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
-\author{\IEEEauthorblockN{Andreas Våge}
-\IEEEauthorblockA{\textit{Dept. of Engineering Cybernetics} \\
-\textit{NTNU}\\
-Trondheim, Norway \\
-andreas.vage@ntnu.no}
-\and
-\IEEEauthorblockN{Tor Nordam}
-\IEEEauthorblockA{\textit{Dept. of Environment and New Resources} \\
-\textit{SINTEF Ocean}\\
-Trondheim, Norway \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{Aya Saad}
-\IEEEauthorblockA{\textit{Dept. of Engineering Cybernetics} \\
-\textit{NTNU}\\
-Trondheim, Norway \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{Annette Stahl}
-\IEEEauthorblockA{\textit{Dept. of Engineering Cybernetics} \\
-\textit{NTNU}\\
-Trondheim, Norway \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{Martin Ludvigsen}
-\IEEEauthorblockA{\textit{Dept. of Marine Technology} \\
-\textit{NTNU}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{Kanna Rajan}
-\IEEEauthorblockA{\textit{Underwater Systems and Technology Laborator} \\
-\textit{ University of Porto}\\
-Porto,  Portugal \\
-email address or ORCID}
+\author{\IEEEauthorblockN{
+Andreas Våge\IEEEauthorrefmark{1},
+Tor Nordam\IEEEauthorrefmark{2},
+Aya Saad\IEEEauthorrefmark{1},
+Annette Stahl\IEEEauthorrefmark{1},
+Martin Ludvigsen\IEEEauthorrefmark{3},
+Kanna Rajan\IEEEauthorrefmark{4},
 }
-
+\IEEEauthorblockA{\IEEEauthorrefmark{1}
+\textit{Dept. of Engineering Cybernetics},
+\textit{Norwegian University of Science and Technology (NTNU)},
+Trondheim, Norway \\
+}
+\IEEEauthorblockA{\IEEEauthorrefmark{2}
+\textit{Dept. of Environment and New Resources},
+\textit{SINTEF Ocean},
+Trondheim, Norway \\
+}
+\IEEEauthorblockA{\IEEEauthorrefmark{3}
+\textit{Dept. of Marine Technology},
+\textit{NTNU},
+Trondheim, Norway \\
+}
+\IEEEauthorblockA{\IEEEauthorrefmark{4}
+\textit{Underwater Systems and Technology Laboratory},
+\textit{ University of Porto},
+Porto,  Portugal \\
+}
+}
 \maketitle
 
 \begin{abstract}
@@ -77,31 +70,27 @@ AUV, AI, Planning, Plankton, Gaussian Process
 Earlier work on robotic adaptive sampling in the upper water column typically ignores the temporal property caused by the current under the assumption that the sample time-span is short enough compared to the current velocity so that the transportation is negligible or the current and the process being observed are in a stationary equilibrium.
 
 \section{Technical Description}
-
+The overall sense, plan and act loop is seen in \cref{fig:sensePlanActLoop}
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=\linewidth]{figures/workflow-simplified.png}}
 \caption{The overall control loop of the system}
-\label{fig:senseThinkActLoop}
+\label{fig:sensePlanActLoop}
 \end{figure}
 
 \paragraph{Short description of the imaging and classification pipeline}
 
 \paragraph{Local Current Model}
 The novel integration of a local current model allows our method to sample a process over a long duration, while taking into account the transport of the process along the current.
-The local current model is either estimated prior to the mission from the Numerical hydrodynamic model SINMOD or accumulated during the mission from acoustic doppler velocity measurements on the AUV.
+The local current model is either estimated prior to the mission from the Numerical hydrodynamic model SINMOD or accumulated during the mission from acoustic doppler current profiler (ADCP) measurements on the AUV.
 \paragraph{Particle Transportation}
-A set of particles are distributed along the sample space.  
+An ensemble of particles are drawn along the sample space.  
 Each particle is transported individually, using a variable-time step integrator through the current field, applying a random walk with the local diffusivity.
-\begin{figure}[tbp]
-\centerline{\includegraphics[width=\linewidth]{figures/munkholmen_planned_path.png}}
-\caption{The AUV has traversed the blue path and gathered data (orange points), which has been transported with the current, and are now estimated to be located at the red points.
-The contour shows the predicted distribution for which the red path is maximising expected measured concentration and minimising model variance.}
-\label{fig:munkholmen}
-\end{figure}
+
 \paragraph{Gaussian Process}
 Kriging/Gaussian Process regression is performed over the transported particles.
 Gaussian process regression is data driven and requires very few parameters, which is important as the process observed is little known making it hard to fit a parameter based model.
 In addition to estimate the mean predicted values (the Kriging surface) Gaussian Process regression also estimates the uncertainty, which is later used to balance exploration vs exploitation when deliberating where the AUV should go next.
+
 \paragraph{Objective Function}
 The objective function is calculated over the estimated GP model along the path candidate.
 It is based on three interests:
@@ -120,7 +109,13 @@ The search is made more efficient by utilising traditional survey paths as heuri
 %Bresenham's line algorithm
 
 \section{Experimental Results}
-The system has been tested and verified in simulations and on historic data. Fig.~\ref{fig:munkholmen} shows the planned path based on real data from a survey in the Trondheim fjord in April during the annual algae bloom. The planned path is maximising the expected concentration of detected algae, while also minimising the variance of the estimated Gaussian process. 
+The system has been tested and verified in simulations and on historic data. Fig.~\ref{fig:munkholmen} shows the planned path based on real data from a survey in the Trondheim fjord in April during the annual algae bloom. The planned path is maximising the expected concentration of detected algae, while also minimising the variance of the estimated Gaussian process.
+\begin{figure}[tbp]
+\centerline{\includegraphics[width=\linewidth]{figures/munkholmen_planned_path.png}}
+\caption{The AUV has traversed the blue path and gathered data (orange points), which has been transported with the current, and are now estimated to be located at the red points.
+The contour shows the predicted distribution for which the red path is maximising expected measured concentration and minimising model variance.}
+\label{fig:munkholmen}
+\end{figure}
 
 The next step is to perform new experiments with the AUV operating autonomously.
 \section*{Acknowledgment}
