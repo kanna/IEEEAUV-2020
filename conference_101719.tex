@@ -71,6 +71,7 @@ Earlier work on robotic adaptive sampling in the upper water column typically ig
 
 \section{Technical Description}
 The overall sense, plan and act loop is seen in \cref{fig:sensePlanActLoop}
+
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=\linewidth]{figures/workflow-simplified.png}}
 \caption{The overall control loop of the system}
@@ -82,8 +83,9 @@ The overall sense, plan and act loop is seen in \cref{fig:sensePlanActLoop}
 \paragraph{Local Current Model}
 The novel integration of a local current model allows our method to sample a process over a long duration, while taking into account the transport of the process along the current.
 The local current model is either estimated prior to the mission from the Numerical hydrodynamic model SINMOD or accumulated during the mission from acoustic doppler current profiler (ADCP) measurements on the AUV.
+
 \paragraph{Particle Transportation}
-An ensemble of particles are drawn along the sample space.  
+An ensemble of particles are drawn from the estimated sample area. 
 Each particle is transported individually, using a variable-time step integrator through the current field, applying a random walk with the local diffusivity.
 
 \paragraph{Gaussian Process}
@@ -100,13 +102,14 @@ It is based on three interests:
     \item Exploration: minimise model variance by sampling from previously little visited areas.
 \end{itemize}
 
-
-
 \paragraph{Path Heuristics}
 The goal is to find the path which maximises the objective function based on the estimated GP model.
+Only the first part of the path will be traversed before new measurements are incorporated into the model and a new path is deliberated, however the path should be longer than the first step to achieve long term goals.
 However allowing any kind of path requires infinite evaluations of the objective function.
-The search is made more efficient by utilising traditional survey paths as heuristics. E.g the standard square survey showed in Fig.~\ref{fig:munkholmen} is parameterised by the covered rectangle and its density, which means significantly fewer parameters to optimise compared to specifying each line individually. 
+The search is made more efficient by utilising traditional survey paths as heuristics. E.g the standard square survey showed in Fig.~\ref{fig:munkholmen} is parameterised by the covered rectangle and its density, which is significantly fewer parameters to optimise compared to specifying each line individually. 
 %Bresenham's line algorithm
+
+All code is open source and based on open source projects. Including the AUV control and navigation software (DUNE) and mission control (Neptus). 
 
 \section{Experimental Results}
 The system has been tested and verified in simulations and on historic data. Fig.~\ref{fig:munkholmen} shows the planned path based on real data from a survey in the Trondheim fjord in April during the annual algae bloom. The planned path is maximising the expected concentration of detected algae, while also minimising the variance of the estimated Gaussian process.
