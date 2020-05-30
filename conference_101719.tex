@@ -135,12 +135,9 @@ The overall sense, plan and act loop for the \proj is seen in \cref{fig:sensePla
 \caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements, and will thus continuously update the plan.}
 \label{fig:sensePlanActLoop}
 \end{figure}
-The resulting actions 
-
-
+The executable plan consists of way-points for the low level control software to follow and commands for turning on and off scientific sensors, but also controls when new way-points need to be generated and the necessary steps to do so.
 
 \subsection{Spatio-Temporal modelling}
-
 As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process. 
 A local current model is used to predict the temporal movement of the process, by seeding an ensamble of particles over the model and transport each particle individually into the same temporal plane.
 Once in the same temporal plane we consider it a standard spatial statistics problem and interpolate between the particles using Gaussian Process Regression/Kriging.
