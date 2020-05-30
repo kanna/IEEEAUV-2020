@@ -63,9 +63,7 @@ The framework initially identifies target taxa hotpots related to the upper wate
 
 \textbf{AILARON} (\textbf{A}utonomous
 \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
-identifying pla\textbf{N}kton taxa in-situ) for upper water-column
-microbial biology that images, processes, analyzes, classifies plankton-based imagery in-situ in order
-to enable intelligent onboard targeted sampling.
+identifying pla\textbf{N}kton taxa in-situ)
 
 \section{Motivation}
 Following processes along the current in the ocean is useful..
@@ -80,7 +78,7 @@ The following section describes one attempt to estimate and include the current 
 
 \section{Technical Description}
 In the AILARON project the process monitored are microbial biology in the upper water column, and a novel silhouette camera has been implemented into the hull of a AUV.
-It continuously captures images of particles floating trough its capture volume, magnifying them while keeping them in focus over the entire capture volume.
+It continuously captures images of particles floating trough its capture volume, magnifying them while keeping them in focus.
 The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
 This stream is accumulated and interpreted as concentration measurements of the different classes with accompanying measurement variances.
 
