@@ -108,7 +108,7 @@ measure local current profiles.\cmt{give citations with a bibliography}.
 
 \section{Technical Description}
 
-In \proj the process monitored are microbial biology with a novel
+In \proj the process monitored are microbial biology and a novel
 camera has been implemented into the hull of a AUV.  It continuously
 captures images of particles floating trough its capture volume,
 magnifying them while keeping them in focus over the entire capture
@@ -124,18 +124,20 @@ concentration of particles, but extending the system to multiple
 classes is possible.  Also other observable processes then microbial
 biology could be monitored with the same system.
 
-The overall sense, plan and act loop (\cmt{This is abrupt. Most
-  readers without an AI background won't know what the sense-plan-act
-  loop is. Plus you should cite prior work there}) for the \proj is
-seen in Fig. ~\ref{fig:sensePlanActLoop}. \cmt{This a very different notion
-  of SPA, but its good!}
+\subsection{Automated Planning and Execution}
 
+The system is implemented as a set of sense, plan, act loops, communicating with each other trough goals and observations. \cite{rajan12}
+The overall sense, plan and act loop for the \proj is seen in \cref{fig:sensePlanActLoop}. 
+%(\cmt{This is abrupt. Most readers without an AI background won't know what the sense-plan-act loop is. Plus you should cite prior work there})
+%\cmt{This a very different notion of SPA, but its good!}
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=0.9\linewidth]{figures/workflow-simplified.eps}}
 \caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements, and will thus continuously update the plan.}
-
 \label{fig:sensePlanActLoop}
 \end{figure}
+The resulting actions 
+
+
 
 \subsection{Spatio-Temporal modelling}
 
@@ -150,29 +152,21 @@ profiler (ADCP) measurements on the AUV.
 \paragraph{Particle Transport}
 A Lagrangian particle transport model, derived from previous and ongoing
 work at SINTEF \cite{Rye2006}, is run onboard the vehicle.
-An ensemble of particles are drawn from the estimated sample area.
-Each particle is transported individually, using a variable-time step
+Particles are transported individually, using a variable-time step
 integrator \cite{Dormand1980} through the current field, applying a random walk with the local diffusivity.
 
 \paragraph{Gaussian Process Regression} 
-Once the particles has been transported into the same temporal plane, Gaussian Process Regression is performed to estimate the spatial structure of the micr. 
-Kriging/Gaussian Process regression is performed over the transported
-particles. 
+Once the particles has been transported into the same temporal plane, Gaussian Process Regression is performed over the particles to estimate the spatial structure of the microbiology concentrations.
 Gaussian process regression is data driven and requires very few parameters, which is important as the process observed is little known, making it hard to fit a parameter based model.
 In addition to estimating the mean predicted values (the Kriging surface)
 Gaussian Process regression also estimates the uncertainty, which is
 later used to balance exploration vs exploitation when deliberating
-where the AUV should go next. 
+where the AUV should go next.
 
-(\cmt{Cite. This is confusing; are you
-  using a GP with the hydro-dynamic flow? I suspect what you want to
-  say is, once a hot-spot has been identified, then to understand its
-  spatial structure (size, extant and potentially as a result, the
-  community (of the micro-organism) structure), one needs to do a GP
-  (a la, work in Runde). Right?})
+%(\cmt{Cite. This is confusing; are you using a GP with the hydro-dynamic flow? I suspect what you want to say is, once a hot-spot has been identified, then to understand its spatial structure (size, extant and potentially as a result, the community (of the micro-organism) structure), one needs to do a GP (a la, work in Runde). Right?})
+\subsection{Path Generation}
 
 \paragraph{Objective Function}
-
 The objective function is calculated over the estimated GP model along
 the path candidate.  It is based on three interests:
 
