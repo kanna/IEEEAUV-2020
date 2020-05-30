@@ -126,16 +126,17 @@ biology could be monitored with the same system.
 
 \subsection{Automated Planning and Execution}
 
-The system is implemented as a set of sense, plan, act loops, communicating with each other trough goals and observations. \cite{rajan12}
+The automated execution framework, T-REX, used is implemented as a set of sense, plan, act loops, communicating with each other trough goals and observations \cite{rajan12}.
 The overall sense, plan and act loop for the \proj is seen in \cref{fig:sensePlanActLoop}. 
 %(\cmt{This is abrupt. Most readers without an AI background won't know what the sense-plan-act loop is. Plus you should cite prior work there})
 %\cmt{This a very different notion of SPA, but its good!}
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=0.9\linewidth]{figures/workflow-simplified.eps}}
-\caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements, and will thus continuously update the plan.}
+\caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements which again are used to update the plan.}
 \label{fig:sensePlanActLoop}
 \end{figure}
-The executable plan consists of way-points for the low level control software to follow and commands for turning on and off scientific sensors, but also controls when new way-points need to be generated and the necessary steps to do so.
+The executable plan consists of way-points for the low level control software to follow and commands for turning on and off scientific sensors.
+To generate this plan first a model of the process of interest has to be generated/updated, then based on this model, a path can be found by optimising a objective function.
 
 \subsection{Spatio-Temporal modelling}
 As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process. 
@@ -162,7 +163,7 @@ where the AUV should go next.
 
 %(\cmt{Cite. This is confusing; are you using a GP with the hydro-dynamic flow? I suspect what you want to say is, once a hot-spot has been identified, then to understand its spatial structure (size, extant and potentially as a result, the community (of the micro-organism) structure), one needs to do a GP (a la, work in Runde). Right?})
 \subsection{Path Generation}
-
+Whenever the execution framework determines a new path is required first the model described above has to be updated.
 \paragraph{Objective Function}
 The objective function is calculated over the estimated GP model along
 the path candidate.  It is based on three interests:
