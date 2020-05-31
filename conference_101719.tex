@@ -71,72 +71,48 @@ than $50\%$ of the global oxygen supply. Hence, studying their
 community structure, abundance, and dispersion across the ocean is a
 primary research concern. To avoid transferring planktonic organisms
 to the lab or applying ship-based point profiling as traditional
-approaches suggest, we propose, an AUV control system with a framework
+approaches suggest our project,
+\proj (\textbf{A}utonomous \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot identifying pla\textbf{N}kton taxa in-situ),  an open source AUV control system with a framework
 that images, identifies, and measures targeted plankton spatial spread
-in-situ, akin to a ``sniffer dog''.  The software framework itself
-identifies target taxa hotpots related to the upper water-column
-microbial biology. Then, it adaptively plans the tracking of the
-suggested hotspots for further exploration, allowing for accurate
-modeling of targeted biological phenomena, which is an essential task
-for marine biologists and the management of marine ecology.
-%Big picture stuff..
+in-situ, akin to a ``sniffer dog''.
+Then, it adaptively plans for mapping the spatial distribution of biomass combining exploration of the unknown and exploitation of the already discovered interesting biology.
 
-\proj (\textbf{A}utonomous \textbf{I}maging and \textbf{L}earning
-\textbf{A}i \textbf{RO}bot identifying pla\textbf{N}kton taxa in-situ)
-for upper water-column microbial biology that images, processes,
-analyzes, classifies plankton-based imagery in-situ in order to enable
-intelligent onboard targeted sampling.
+In this paper we present the autonomous AI-planner, how it interact with the on board imaging and deep learning classification module, performs data processing using Gaussian Process (GP) Regression combined with a 4D current model and uses the estimated spatial distribution to perform intelligent path planning.
 
 %\section{Motivation}
 
 \section{Related Work}
 
-Earlier work on robotic adaptive sampling in the upper water column
-typically models the temporal property caused by the current as noise
-under the assumption that the sample time-span is short enough
-compared to the current velocity so that the transportation is
-negligible or the current and the process being observed are in a
-stationary equilibrium \cite{fossum18b}.  Incorporating the current into the model is
+In \cite{fossum18b} an AUV adaptivly measures Chlorophyll a to estimate biomass 3D spatial structure, based on GP regression, \cite{das15} used adaptive sampling to determine when optimally perform water samples with an AUV.
+However both assumes the sample time-span is short enough for the temporal movement of the biomass caused by the current to be ignored as noise.
+\cite{smith10} used ocean model predictions to plan glider paths to optimally sample algae patches, but does not adaptivly update the path during the search.
+Incorporating the current into the adaptive sampling is
 ambitious, but numerical ocean models provides more accurate forecasts
 and small and improved acoustic sensors allows AUVs to directly
-measure local current profiles.\cmt{give citations with a bibliography}.
-
-
-% The following section describes one attempt to estimate and include
-% the current into the models used for adaptive sampling; enabling the
-% AUV to follow interesting processes along the current over time.
+measure local current profiles \cite{Fong2006, Cusi2017}.
 
 \section{Technical Description}
 
-In \proj the process monitored are microbial biology and a novel
-camera has been implemented into the hull of a AUV.  It continuously
-captures images of particles floating trough its capture volume,
-magnifying them while keeping them in focus over the entire capture
-volume.  The raw images are processed and classified by a
-state-of-the-art deep learning model on-board the AUV, resulting in a
-stream of detected particle classes along with prediction confidences.
-This stream is accumulated and interpreted as concentration
-measurements of the different classes with accompanying measurement
-variances.
+The overall data/control flow can be seen in \cref{fig:sensePlanActLoop}.
+When plan generation and execution embedded on a robot is continuous, sensing of the robots environment updates the internal representations which could modify future actions with plan synthesis and in turn future actions.
+In enabling this continuous \textbf{sense},
+\textbf{plan} and \textbf{act} loop, the robot can adapt to changing
+conditions in the real world enabling a cognitive capacity that most
+robotic vehicles to date, fall short of \cite{rajan12}.
 
-For now we only consider one feature at a time, i.e. the total
-concentration of particles, but extending the system to multiple
-classes is possible.  Also other observable processes then microbial
-biology could be monitored with the same system.
-
-\subsection{Automated Planning and Execution}
-
-The automated execution framework, T-REX, used is implemented as a set of sense, plan, act loops, communicating with each other trough goals and observations \cite{rajan12}.
-The overall sense, plan and act loop for \proj is seen in \cref{fig:sensePlanActLoop}. 
-%(\cmt{This is abrupt. Most readers without an AI background won't know what the sense-plan-act loop is. Plus you should cite prior work there})
-%\cmt{This a very different notion of SPA, but its good!}
 \begin{figure}[tbp]
 \centerline{\includegraphics[width=0.9\linewidth]{figures/workflow-simplified.eps}}
 \caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements which again are used to update the plan.}
 \label{fig:sensePlanActLoop}
 \end{figure}
-The executable plan consists of way-points for the low level control software to follow and commands for turning on and off scientific sensors.
-To generate this plan first a model of the process of interest has to be generated/updated, then based on this model, a path can be found by optimising a objective function.
+
+\paragraph{Imaging Pipeline}
+In \proj the novel SILCAM has been implemented into the hull of a AUV.
+It continuously captures magnified images of particles floating trough its capture volume.
+The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
+This stream is accumulated and interpreted as concentration measurements of the different classes with accompanying measurement variances.
+%For now we only consider one feature at a time, i.e. the total concentration of particles, but extending the system to multiple classes is possible.
+%Also other observable processes then microbial biology could be monitored with the same system.
 
 \subsection{Spatio-Temporal modelling}
 As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process. 
@@ -214,10 +190,9 @@ the estimated Gaussian process.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\linewidth]{figures/Roald.jpeg}
+  \includegraphics[width=\linewidth]{figures/LAUV.jpg}
   \caption{The Light Autonomous Underwater Vehicle (LAUV) Roald, used in
-    \proje, being picked up at the end of a mission in the Trondheim
-    fjord.}
+    \proje. The sample volume of the SILCAM, capable of capturing images of microbial biology, can be seen on the underside of the nose. The equipped Doppler Velocity Logger include current profiling capabilities used to assimilate a current field during operation.}
   \label{fig:roald}
 \end{figure}
 
