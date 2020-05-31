@@ -109,7 +109,13 @@ robotic vehicles to date, fall short of \cite{rajan12}.
 \end{figure}
 
 \subsection{Particle detection-classification pipeline}
-A novel imaging camera, the SILCAM \cite{Davies2017a}, and \cite{Davies2017b}, based on a transmittance imaging system, is embedded into the hull of an AUV. This onboard imaging enables in-situ time-series capturing of magnified images of particles floating trough an installed volume of \si{55}{\micro\meter} diameter while taking into account spatial and temporal variations in particle properties.
+
+A novel imaging camera \cite{Davies2017a} based on a transmittance
+imaging system, is embedded into the hull of the AUV. This onboard
+imaging enables in-situ time-series capturing of magnified images of
+particles floating through an installed volume of 55 micro meter
+diameter while taking into account spatial and temporal variations in
+particle properties.
 
 This stream of captured images is, in turn, input to object detection and classification pipeline that adopts deep machine learning (DL) approaches. The pipeline line starts with extracting and identifying the set of objects per image frame in the time-series. Then extracted objects are input to a classification module for further classification and taxa recognition by means of an embedded DL architecture. 
 
