@@ -72,7 +72,7 @@ community structure, abundance, and dispersion across the ocean is a
 primary research concern. To avoid transferring planktonic organisms
 to the lab or applying ship-based point profiling as traditional
 approaches suggest our project,
-\proj (\textbf{A}utonomous \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot identifying pla\textbf{N}kton taxa in-situ),  an open source AUV control system with a framework
+\proj (\textbf{A}utonomous \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot identifying pla\textbf{N}kton taxa in-situ),  an open source AUV framework
 that images, identifies, and measures targeted plankton spatial spread
 in-situ, akin to a ``sniffer dog''.
 Then, it adaptively plans for mapping the spatial distribution of biomass combining exploration of the unknown and exploitation of the already discovered interesting biology.
@@ -101,13 +101,13 @@ conditions in the real world enabling a cognitive capacity that most
 robotic vehicles to date, fall short of \cite{rajan12}.
 
 \begin{figure}[tbp]
-\centerline{\includegraphics[width=0.9\linewidth]{figures/workflow-simplified.eps}}
+\centerline{\includegraphics[width=0.8\linewidth]{figures/workflow-simplified.eps}}
 \caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements which again are used to update the plan.}
 \label{fig:sensePlanActLoop}
 \end{figure}
 
-\paragraph{Imaging Pipeline}
-In \proj the novel SILCAM has been implemented into the hull of a AUV.
+\subsection{Imaging Pipeline}
+The novel SILCAM has been implemented into the hull of an AUV.
 It continuously captures magnified images of particles floating trough its capture volume.
 The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
 This stream is accumulated and interpreted as concentration measurements of the different classes with accompanying measurement variances.
@@ -115,59 +115,33 @@ This stream is accumulated and interpreted as concentration measurements of the 
 %Also other observable processes then microbial biology could be monitored with the same system.
 
 \subsection{Spatio-Temporal modelling}
-As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process. 
-A local current model is used to predict the temporal movement of the process, by seeding an ensamble of particles over the model and transport each particle individually into the same temporal plane.
-Once in the same temporal plane we consider it a standard spatial statistics problem and interpolate between the particles using Gaussian Process Regression/Kriging.
+%As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process.
+To enable mapping microbiological processes over time as they float with the current a local current model is used to predict the temporal movement of the biomass then Gaussian Process Regression/Kriging is used to estimate a dense spatial distribution of the biomass.
 
 \paragraph{Local Current Model}
-Represented as a 4D (space and time) vector field over the operational area of the AUV, it is either generated prior to missions based on the Numerical hydrodynamic model SINMOD \cite{slagstad2005} or accumulated during the mission from acoustic doppler current
-profiler (ADCP) measurements on the AUV.
-
-\paragraph{Particle Transport}
+Represented as a 4D (space and time) vector field over the operational area of the AUV, it is either generated prior to missions based on a numerical hydrodynamic model
+%SINMOD \cite{slagstad2005}
+or accumulated during the mission from acoustic doppler current profiler (ADCP) measurements on the AUV.
 A Lagrangian particle transport model, derived from previous and ongoing
 work at SINTEF \cite{Rye2006}, is run onboard the vehicle.
 Particles are transported individually, using a variable-time step
-integrator \cite{Dormand1980} through the current field, applying a random walk with the local diffusivity.
+integrator %\cite{Dormand1980} 
+through the current field, applying a random walk with the local diffusivity.
 
 \paragraph{Gaussian Process Regression} 
-Once the particles has been transported into the same temporal plane, Gaussian Process Regression is performed over the particles to estimate the spatial structure of the microbiology concentrations.
-Gaussian process regression is data driven and requires very few parameters, which is important as the process observed is little known, making it hard to fit a parameter based model.
+Gaussian Process Regression is performed over the particles to estimate the spatial structure of the microbiology concentrations.
+%Gaussian process regression is data driven and requires very few parameters, which is important as the process observed is little known, making it hard to fit a parameter based model.
 In addition to estimating the mean predicted values (the Kriging surface)
 Gaussian Process regression also estimates the uncertainty, which is
 later used to balance exploration vs exploitation when deliberating
 where the AUV should go next.
 
 %(\cmt{Cite. This is confusing; are you using a GP with the hydro-dynamic flow? I suspect what you want to say is, once a hot-spot has been identified, then to understand its spatial structure (size, extant and potentially as a result, the community (of the micro-organism) structure), one needs to do a GP (a la, work in Runde). Right?})
-\subsection{Path Generation}
-Whenever the execution framework determines a new path is required first the model described above has to be updated.
-\paragraph{Objective Function}
-The objective function is calculated over the estimated GP model along
-the path candidate.  It is based on three interests:
-
-\begin{itemize}
-
-    \item scientific interest in particular plankton classes. 
-    \item Exploitation: maximise expected measured concentration
-      according to the kriging surface. 
-    \item Exploration: minimise model variance by sampling from
-      previously little visited areas. 
-
-\end{itemize}
-
-(\cmt{This is very abrupt. You want to say where the GP is being used,
-  but after you talk about the plan-exec, since it is the plan-exec
-  component which determines when to activate the GP and modify the
-  kernel. There should be a nice flow between when you introduce the
-  GP with the rest of the para's below. And after Plan/Exec.}).
-
-\paragraph{Path Heuristics}
-
-The goal is to find the path which maximises the objective function
-based on the estimated GP model.  Only the first part of the path will
-be traversed before new measurements are incorporated into the model
-and a new path is deliberated, however the path should be longer than
-the first step to achieve long term goals.  However allowing any kind
-of path requires infinite evaluations of the objective function.  The
+\subsection{Path Generation with Heuristics}
+The goal is to find the path which maximises an objective function
+based on the estimated GP model.
+However allowing any kind
+of path requires a lot evaluations of the objective function. The
 search is made more efficient by utilising traditional survey paths as
 heuristics. E.g the standard square survey showed in
 Fig.~\ref{fig:munkholmen} is parameterised by the covered rectangle
@@ -175,6 +149,17 @@ and its density, which is significantly fewer parameters to optimise
 compared to specifying each line individually.
 %Bresenham's line algorithm
 
+The objective function is calculated over the estimated GP model along
+the path candidate. It is based on three interests:
+
+\begin{itemize}
+    \item Scientific interest in particular plankton classes. 
+    \item Exploitation: maximise expected measured concentration per travelled distance
+      according to the kriging surface. 
+    \item Exploration: minimise model variance per travelled distance by sampling from
+      previously little visited areas.
+\end{itemize}
+%(\cmt{This is very abrupt. You want to say where the GP is being used, but after you talk about the plan-exec, since it is the plan-exec component which determines when to activate the GP and modify the kernel. There should be a nice flow between when you introduce the GP with the rest of the para's below. And after Plan/Exec.}).
 All code is open source and based on open source projects. Including
 the AUV control and navigation software (DUNE) and mission control
 (Neptus)\cite{pinto2013lsts}.
@@ -182,7 +167,7 @@ the AUV control and navigation software (DUNE) and mission control
 \section{Experimental Results}
 
 The system has been tested and verified in simulations and on historic
-data. Fig.~\ref{fig:munkholmen} shows the planned path based on real
+data. Fig.~\ref{fig:munkholmen} shows the planned path based on historic
 data from a survey in the Trondheim fjord in April 2020, during an
 annual algae bloom. The planned path is maximising the expected
 concentration of detected algae, while also minimising the variance of
@@ -207,8 +192,7 @@ the estimated Gaussian process.
   \label{fig:munkholmen}
 \end{figure}
 
-Future steps include experimentation with the AUV operating
-autonomously in open waters.
+%Future steps include experimentation with the AUV operating autonomously in open waters.
 
 % \section*{Acknowledgment}
 % This work was supported by the Research Council of Norway through the FRINATEK/IKTPLUSS program, project number 262701.
