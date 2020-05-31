@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{siunitx}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
@@ -107,11 +108,17 @@ robotic vehicles to date, fall short of \cite{rajan12}.
 \label{fig:sensePlanActLoop}
 \end{figure}
 
-\subsection{Imaging Pipeline}
-The novel SILCAM has been implemented into the hull of an AUV.
-It continuously captures magnified images of particles floating trough its capture volume.
-The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
-This stream is accumulated and interpreted as concentration measurements of the different classes with accompanying measurement variances.
+\subsection{Particle detection-classification pipeline}
+A novel imaging camera, the SILCAM \cite{Davies2017a}, and \cite{Davies2017b}, based on a transmittance imaging system, is embedded into the hull of an AUV. This onboard imaging enables in-situ time-series capturing of magnified images of particles floating trough an installed volume of \si{55}{\micro\meter} diameter while taking into account spatial and temporal variations in particle properties.
+
+This stream of captured images is, in turn, input to object detection and classification pipeline that adopts deep machine learning (DL) approaches. The pipeline line starts with extracting and identifying the set of objects per image frame in the time-series. Then extracted objects are input to a classification module for further classification and taxa recognition by means of an embedded DL architecture. 
+
+We exerted a thorough performance comparison between state-of-the-art DL architectures. Our selection criteria recommend the use of a simple 5-convolutional-layers network since it outperforms the other DL structures in terms of prediction speed, detection accuracy, and space in the memory. The accuracy achieved after training the network over a dataset of 7800 different images of planktonic organisms was $95.09\%$ compared to $93.54\%$,$93.54\%$, $91.98\%$, $92.24\%$, $91.21\%$, and $82.68\%$ achieved by Zooplanktonet \cite{dai2016zooplanktonet}, VGGNet \cite{simonyan2014very}, ResNeXt \cite{xie2017aggregated}, ResNet  \cite{he2016deep}, AlexNet \cite{krizhevsky2012imagenet} and GoogleNet  \cite{szegedy2015going} respectively. 
+
+%The novel SILCAM has been implemented into the hull of an AUV.
+%It continuously captures magnified images of particles floating trough its capture volume.
+%The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
+The last stage in this pipeline accumulates and interprets the classified plantonic objects as concentration measurements of the different classes with accompanying measurement variances.
 %For now we only consider one feature at a time, i.e. the total concentration of particles, but extending the system to multiple classes is possible.
 %Also other observable processes then microbial biology could be monitored with the same system.
 
