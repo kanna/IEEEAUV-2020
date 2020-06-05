@@ -21,7 +21,13 @@
 % \title{Towards a system for Adaptive sampling of processes floating
 %   with the current*\\
 \title{Towards BioMapping: Autonomous Exploration for water column Biomass\\
-% {\footnotesize \textsuperscript{*}Note: Working title}
+{\footnotesize 
+Towards BioSLAM: Autonomous Exploration for water column Biomass\\
+Towards BioSTAM: Simultaneous Tracking and Mapping of water column Biomass\\
+Towards BioLagranMap: Autonomous Lagrangian mapping of Biomass\\
+Spatio-Temporal Mapping and Exploration of water column Biomass\\
+Specie-Spatio-Temporal Mapping of water column plankton\\
+}
 %\thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
@@ -61,7 +67,7 @@ Porto,  Portugal \\
 % \end{abstract}
 
 \begin{IEEEkeywords}
-AUV, Machine Learning, Sampling, Gaussian Process, AI Planning, Plankton imaging
+AUV, Machine Learning, Adaptive Sampling, Gaussian Process, Plankton imaging
 \end{IEEEkeywords}
 
 \section{Introduction and Motivation}
@@ -78,7 +84,7 @@ that images, identifies, and measures targeted plankton spatial spread
 in-situ, akin to a ``sniffer dog''.
 Then, it adaptively plans for mapping the spatial distribution of biomass combining exploration of the unknown and exploitation of the already discovered interesting biology.
 
-In this paper we present the autonomous AI-planner, how it interact with the on board imaging and deep learning classification module, performs data processing using Gaussian Process (GP) Regression combined with a 4D current model and uses the estimated spatial distribution to perform intelligent path planning.
+In this paper we present the adaptive sampling algorithm, which based on input from the on board imaging and deep learning classification module, performs data processing using Gaussian Process (GP) Regression combined with a 4D current model and uses the estimated spatial distribution to perform intelligent path planning.
 
 %\section{Motivation}
 
@@ -113,18 +119,18 @@ robotic vehicles to date, fall short of \cite{rajan12}.
 A novel imaging camera \cite{Davies2017a} based on a transmittance
 imaging system, is embedded into the hull of the AUV. This onboard
 imaging enables in-situ time-series capturing of magnified images of
-particles floating through an installed volume of 55 micro meter
+particles floating through an installed volume of \SI{55}{\micro\meter}
 diameter while taking into account spatial and temporal variations in
 particle properties.
 
-This stream of captured images is, in turn, input to object detection and classification pipeline that adopts deep machine learning (DL) approaches. The pipeline line starts with extracting and identifying the set of objects per image frame in the time-series. Then extracted objects are input to a classification module for further classification and taxa recognition by means of an embedded DL architecture. 
+This stream of captured images is, in turn, input to object detection and classification pipeline that adopts deep machine learning (DL) approaches. The pipeline line starts with extracting and identifying the set of objects per image frame in the time-series. Then extracted objects are input to a classification module for further taxa identification and recognition by means of an embedded DL architecture. 
 
 We exerted a thorough performance comparison between state-of-the-art DL architectures. Our selection criteria recommend the use of a simple 5-convolutional-layers network since it outperforms the other DL structures in terms of prediction speed, detection accuracy, and space in the memory. The accuracy achieved after training the network over a dataset of 7800 different images of planktonic organisms was $95.09\%$ compared to $93.54\%$,$93.54\%$, $91.98\%$, $92.24\%$, $91.21\%$, and $82.68\%$ achieved by Zooplanktonet \cite{dai2016zooplanktonet}, VGGNet \cite{simonyan2014very}, ResNeXt \cite{xie2017aggregated}, ResNet  \cite{he2016deep}, AlexNet \cite{krizhevsky2012imagenet} and GoogleNet  \cite{szegedy2015going} respectively. 
 
 %The novel SILCAM has been implemented into the hull of an AUV.
 %It continuously captures magnified images of particles floating trough its capture volume.
 %The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
-The last stage in this pipeline accumulates and interprets the classified plantonic objects as concentration measurements of the different classes with accompanying measurement variances.
+The chosen network architecture implemented for classification, in turn, predicts and interprets planktonic objects extracted from the time-series input raw images. Measurements of the different classes concentration, along with their corresponding variances, are inferred, and they are provided as an output of this process.
 %For now we only consider one feature at a time, i.e. the total concentration of particles, but extending the system to multiple classes is possible.
 %Also other observable processes then microbial biology could be monitored with the same system.
 
