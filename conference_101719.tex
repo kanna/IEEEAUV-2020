@@ -20,14 +20,14 @@
 
 % \title{Towards a system for Adaptive sampling of processes floating
 %   with the current*\\
-\title{Towards BioMapping: Autonomous Exploration for water column Biomass\\
-{\footnotesize 
-Towards BioSLAM: Autonomous Exploration for water column Biomass\\
-Towards BioSTAM: Simultaneous Tracking and Mapping of water column Biomass\\
-Towards BioLagranMap: Autonomous Lagrangian mapping of Biomass\\
-Spatio-Temporal Mapping and Exploration of water column Biomass\\
-Specie-Spatio-Temporal Mapping of water column plankton\\
-}
+\title{Towards BioMapping: Autonomous Exploration of water column Biomass\\
+% {\footnotesize 
+% Towards BioSLAM: Autonomous Exploration for water column Biomass\\
+% Towards BioSTAM: Simultaneous Tracking and Mapping of water column Biomass\\
+% Towards BioLagranMap: Autonomous Lagrangian mapping of Biomass\\
+% Spatio-Temporal Mapping and Exploration of water column Biomass\\
+% Specie-Spatio-Temporal Mapping of water column plankton\\
+% }
 %\thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
@@ -78,34 +78,49 @@ than $50\%$ of the global oxygen supply. Hence, studying their
 community structure, abundance, and dispersion across the ocean is a
 primary research concern. To avoid transferring planktonic organisms
 to the lab or applying ship-based point profiling as traditional
-approaches suggest our project,
-\proj (\textbf{A}utonomous \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot identifying pla\textbf{N}kton taxa in-situ),  an open source AUV framework
-that images, identifies, and measures targeted plankton spatial spread
-in-situ, akin to a ``sniffer dog''.
-Then, it adaptively plans for mapping the spatial distribution of biomass combining exploration of the unknown and exploitation of the already discovered interesting biology.
+approaches suggest our project, \proj (\textbf{A}utonomous
+\textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
+identifying pla\textbf{N}kton taxa in-situ), an open source AUV
+framework that images, identifies, and measures targeted plankton
+spatial spread in-situ, akin to a ``sniffer dog''.  Then, it
+adaptively plans for mapping the spatial distribution of biomass
+combining exploration of the unknown and exploitation of the already
+discovered interesting biology.
 
-In this paper we present the adaptive sampling algorithm, which based on input from the on board imaging and deep learning classification module, performs data processing using Gaussian Process (GP) Regression combined with a 4D current model and uses the estimated spatial distribution to perform intelligent path planning.
+In this paper we present the adaptive sampling algorithm, which based
+on input from the on board imaging and deep learning classification
+module, performs data processing using Gaussian Process (GP)
+Regression combined with a 4D current model and uses the estimated
+spatial distribution to perform intelligent path planning.
 
 %\section{Motivation}
 
 \section{Related Work}
 
-In \cite{fossum18b} an AUV adaptivly measures Chlorophyll a to estimate biomass 3D spatial structure, based on GP regression, \cite{das15} used adaptive sampling to determine when optimally perform water samples with an AUV.
-However both assumes the sample time-span is short enough for the temporal movement of the biomass caused by the current to be ignored as noise.
-\cite{smith10} used ocean model predictions to plan glider paths to optimally sample algae patches, but does not adaptivly update the path during the search.
-Incorporating the current into the adaptive sampling is
-ambitious, but numerical ocean models provides more accurate forecasts
-and small and improved acoustic sensors allows AUVs to directly
-measure local current profiles \cite{Fong2006, Cusi2017}.
+In \cite{fossum18b} an AUV adaptivly measures Chlorophyll a to
+estimate biomass 3D spatial structure, based on GP regression,
+\cite{das15} used adaptive sampling to determine when optimally
+perform water samples with an AUV.  However both assumes the sample
+time-span is short enough for the temporal movement of the biomass
+caused by the current to be ignored as noise.  \cite{smith10} used
+ocean model predictions to plan glider paths to optimally sample algae
+patches, but does not adaptivly update the path during the search.
+Incorporating the current into the adaptive sampling is ambitious, but
+numerical ocean models provides more accurate forecasts and small and
+improved acoustic sensors allows AUVs to directly measure local
+current profiles \cite{Fong2006, Cusi2017}.
 
 \section{Technical Description}
 
-The overall data/control flow can be seen in \cref{fig:sensePlanActLoop}.
-When plan generation and execution embedded on a robot is continuous, sensing of the robots environment updates the internal representations which could modify future actions with plan synthesis and in turn future actions.
-In enabling this continuous \textbf{sense},
-\textbf{plan} and \textbf{act} loop, the robot can adapt to changing
-conditions in the real world enabling a cognitive capacity that most
-robotic vehicles to date, fall short of \cite{rajan12}.
+The overall data/control flow can be seen in
+\cref{fig:sensePlanActLoop}.  When plan generation and execution
+embedded on a robot is continuous, sensing of the robots environment
+updates the internal representations which could modify future actions
+with plan synthesis and in turn future actions.  In enabling this
+continuous \textbf{sense}, \textbf{plan} and \textbf{act} loop, the
+robot can adapt to changing conditions in the real world enabling a
+cognitive capacity that most robotic vehicles to date, fall short of
+\cite{rajan12}.
 
 \begin{figure}[tbp]
 % \centerline{\includegraphics[width=0.8\linewidth]{figures/workflow-simplified.eps}}
@@ -123,30 +138,57 @@ particles floating through an installed volume of \SI{55}{\micro\meter}
 diameter while taking into account spatial and temporal variations in
 particle properties.
 
-This stream of captured images is, in turn, input to object detection and classification pipeline that adopts deep machine learning (DL) approaches. The pipeline line starts with extracting and identifying the set of objects per image frame in the time-series. Then extracted objects are input to a classification module for further taxa identification and recognition by means of an embedded DL architecture. 
+This stream of captured images is, in turn, input to object detection
+and classification pipeline that adopts deep machine learning (DL)
+approaches. The pipeline line starts with extracting and identifying
+the set of objects per image frame in the time-series. Then extracted
+objects are input to a classification module for further taxa
+identification and recognition by means of an embedded DL
+architecture.
 
-We exerted a thorough performance comparison between state-of-the-art DL architectures. Our selection criteria recommend the use of a simple 5-convolutional-layers network since it outperforms the other DL structures in terms of prediction speed, detection accuracy, and space in the memory. The accuracy achieved after training the network over a dataset of 7800 different images of planktonic organisms was $95.09\%$ compared to $93.54\%$,$93.54\%$, $91.98\%$, $92.24\%$, $91.21\%$, and $82.68\%$ achieved by Zooplanktonet \cite{dai2016zooplanktonet}, VGGNet \cite{simonyan2014very}, ResNeXt \cite{xie2017aggregated}, ResNet  \cite{he2016deep}, AlexNet \cite{krizhevsky2012imagenet} and GoogleNet  \cite{szegedy2015going} respectively. 
+We exerted a thorough performance comparison between state-of-the-art
+DL architectures. Our selection criteria recommend the use of a simple
+5-convolutional-layers network since it outperforms the other DL
+structures in terms of prediction speed, detection accuracy, and space
+in the memory. The accuracy achieved after training the network over a
+dataset of 7800 different images of planktonic organisms was $95.09\%$
+compared to $93.54\%$,$93.54\%$, $91.98\%$, $92.24\%$, $91.21\%$, and
+$82.68\%$ achieved by Zooplanktonet \cite{dai2016zooplanktonet},
+VGGNet \cite{simonyan2014very}, ResNeXt \cite{xie2017aggregated},
+ResNet \cite{he2016deep}, AlexNet \cite{krizhevsky2012imagenet} and
+GoogleNet \cite{szegedy2015going} respectively.
 
 %The novel SILCAM has been implemented into the hull of an AUV.
 %It continuously captures magnified images of particles floating trough its capture volume.
 %The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
-The chosen network architecture implemented for classification, in turn, predicts and interprets planktonic objects extracted from the time-series input raw images. Measurements of the different classes concentration, along with their corresponding variances, are inferred, and they are provided as an output of this process.
+The chosen network architecture implemented for classification, in
+turn, predicts and interprets planktonic objects extracted from the
+time-series input raw images. Measurements of the different classes
+concentration, along with their corresponding variances, are inferred,
+and they are provided as an output of this process.
 %For now we only consider one feature at a time, i.e. the total concentration of particles, but extending the system to multiple classes is possible.
 %Also other observable processes then microbial biology could be monitored with the same system.
 
 \subsection{Spatio-Temporal modelling}
 %As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process.
-To enable mapping microbiological processes over time as they float with the current a local current model is used to predict the temporal movement of the biomass then Gaussian Process Regression/Kriging is used to estimate a dense spatial distribution of the biomass.
+To enable mapping microbiological processes over time as they float
+with the current a local current model is used to predict the temporal
+movement of the biomass then Gaussian Process Regression/Kriging is
+used to estimate a dense spatial distribution of the biomass.
 
 \paragraph{Local Current Model}
-Represented as a 4D (space and time) vector field over the operational area of the AUV, it is either generated prior to missions based on a numerical hydrodynamic model
+Represented as a 4D (space and time) vector field over the operational
+area of the AUV, it is either generated prior to missions based on a
+numerical hydrodynamic model
 %SINMOD \cite{slagstad2005}
-or accumulated during the mission from acoustic doppler current profiler (ADCP) measurements on the AUV.
-A Lagrangian particle transport model, derived from previous and ongoing
-work at SINTEF \cite{Rye2006}, is run onboard the vehicle.
-Particles are transported individually, using a variable-time step
-integrator %\cite{Dormand1980} 
-through the current field, applying a random walk with the local diffusivity.
+or accumulated during the mission from acoustic doppler current
+profiler (ADCP) measurements on the AUV.  A Lagrangian particle
+transport model, derived from previous and ongoing work at SINTEF
+\cite{Rye2006}, is run onboard the vehicle.  Particles are transported
+individually, using a variable-time step
+integrator %\cite{Dormand1980}
+through the current field, applying a random walk with the local
+diffusivity.
 
 \paragraph{Gaussian Process Regression} 
 Gaussian Process Regression is performed over the particles to estimate the spatial structure of the microbiology concentrations.
