@@ -38,6 +38,7 @@ Andreas V{\aa}ge\IEEEauthorrefmark{1},
 Aya Saad\IEEEauthorrefmark{1},
 Tor Nordam\IEEEauthorrefmark{2},
 Annette Stahl\IEEEauthorrefmark{1},
+Emlyn Davies\IEEEauthorrefmark{2},
 Martin Ludvigsen\IEEEauthorrefmark{3},
 Kanna Rajan\IEEEauthorrefmark{4},
 }
@@ -69,7 +70,8 @@ Porto,  Portugal \\
 % \end{abstract}
 
 \begin{IEEEkeywords}
-AUV, Machine Learning, Adaptive Sampling, Gaussian Process, Plankton imaging
+  Machine Learning, Adaptive Sampling, Gaussian Process, Plankton
+  imaging
 \end{IEEEkeywords}
 
 \section{Introduction and Motivation}
@@ -80,76 +82,93 @@ than $50\%$ of the global oxygen supply. Hence, studying their
 community structure, abundance, and dispersion across the ocean is a
 primary research concern. To avoid transferring planktonic organisms
 to the lab or applying ship-based point profiling as traditional
-approaches suggest our project, \proj (\textbf{A}utonomous
+approaches suggest, our project, \proj (\textbf{A}utonomous
 \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
-identifying pla\textbf{N}kton taxa in-situ), an open source AUV
+identifying pla\textbf{N}kton taxa in-situ), has designed, built and
+is testing an open source autonomous underwater vehicle (AUV)
 framework that images, identifies, and measures targeted plankton
-spatial spread in-situ, akin to a ``sniffer dog''. If successful,
-a researchers can specify a search area, a set of plankton classes of interest and launch the AUV from shore. The AUV then performs an initial rough search over the area and adaptively maps the found targeted biology over time. At the end of the
-day the AUV returns to shore where it remotely is controlled in and picked up.
+spatial spread in-situ, akin to a ``sniffer dog''. When operational, a
+researchers can specify a search area, a set of plankton taxa of
+interest and launch the AUV from shore for it to explore the upper
+water column for these precise taxa. The AUV performs an initial
+search over the area and adaptively maps the targeted biology over
+time. % At the end of the day the AUV returns to
+% shore where it remotely is controlled in and picked up.
 
-In this paper we present the adaptive sampling algorithm, which based
+In this paper we present the adaptive sampling algorithm and the
+simulation results associated with the hydro-dynamic flow, which based
 on input from the on board imaging and deep learning classification
-module, performs data processing using Gaussian Process (GP)
-Regression combined with a 4D current model and uses the estimated
-spatial distribution to perform intelligent path planning.
+module and performs data processing using Gaussian Process (GP)
+regression combined with a 4D current model and uses the estimated
+spatial distribution to perform trajectory generation. 
 
 %\section{Motivation}
 
 \section{Related Work}
 
-In \cite{fossum18b} an AUV adaptivly measures Chlorophyll a to
-estimate biomass 3D spatial structure, based on GP regression,
-\cite{das15} used adaptive sampling to determine when optimally
-perform water samples with an AUV.  However both assumes the sample
-time-span is short enough for the temporal movement of the biomass
-caused by the current to be ignored as noise.  \cite{smith10} used
-ocean model predictions to plan glider paths to optimally sample algae
-patches, but does not adaptivly update the path during the search.
-Incorporating the current into the adaptive sampling is ambitious, but
-numerical ocean models provides more accurate forecasts and small and
+In \cite{fossum18b} an AUV adaptivly measures Chlorophyll to estimate
+biomass 3D spatial structure, based on GP regression. \cite{das15}
+used adaptive sampling to determine when optimally to take water
+samples with an AUV.  However both assume the sample time-span is
+short enough for the temporal movement of the biomass caused by the
+current to be ignored as noise.  \cite{smith10} uses an ocean model
+prediction to plan glider paths to optimally sample algae patches, but
+does not adaptivly update the path during the search.  Incorporating
+the current structure into the adaptive sampling is ambitious, but
+numerical ocean models provide more accurate forecasts and small and
 improved acoustic sensors allows AUVs to directly measure local
 current profiles \cite{Fong2006, Cusi2017}.
 
-\section{Technical Description}
+Our work is unique in that, it combines some of these ideas, into an
+integrated vehicle for scientific exploration, combining machine
+vision, machine learning, hydro-dynamic flow modeling and an automated
+planning/execution framework, all embedded on a powered AUV platform.
 
 The overall data/control flow can be seen in
-\cref{fig:sensePlanActLoop}. The overalcommunication with human experts, choice of objective function for the path planner and resolution of the on board spatio-temporal biomass model are govern by a general planner. Which continuously 
-controls the path planner and the biomass model during execution. When plan generation and execution embedded on a robot is continuous, sensing of the robots environment
-updates the internal representations which could modify future actions
-with plan synthesis and in turn future actions.  In enabling this
-continuous \textbf{sense}, \textbf{plan} and \textbf{act} loop, the
-robot can adapt to changing conditions in the real world enabling a
-cognitive capacity that most robotic vehicles to date, fall short of
-\cite{rajan12}.
+\cref{fig:sensePlanActLoop}. Communication with human experts, choice
+of objective function for the trajectory planner and resolution of the
+on board spatio-temporal biomass model are governed by an Artificial
+Intelligence (AI) based deliberative planner, which continuously
+controls the trajectory and the biomass model during execution. When
+plan generation and execution embedded on a robot is continuous,
+sensing of the robots environment updates the internal representations
+which could modify future actions with plan synthesis and in turn
+future actions \cite{rajan12}.  In enabling this continuous
+\textbf{sense}, \textbf{plan} and \textbf{act} loop, the robot can
+adapt to changing conditions in the real world enabling a cognitive
+capacity that most robotic vehicles to date, fall short of.
 
 \begin{figure}[tbp]
 % \centerline{\includegraphics[width=0.8\linewidth]{figures/workflow-simplified.eps}}
 \centerline{\includegraphics[width=0.8\linewidth]{figures/workflow-simplified.jpg}}
-\caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements which again are used to update the plan.}
+\caption{The overall control loop running on board the AUV in
+  \proje. After accumulating the measurements into the models, a plan
+  for further exploration is found. The AUV will then start executing
+  the plan, and thus gather new measurements which continuously update
+  the partial plan.}
 \label{fig:sensePlanActLoop}
 \end{figure}
 
 \subsection{Particle detection-classification pipeline}
 
-A novel imaging camera \cite{Davies2017a} based on a transmittance
-imaging system, is embedded into the hull of the AUV. This onboard
-imaging enables in-situ time-series capturing of magnified images of
-particles floating through an installed volume of \SI{55}{\micro\meter}
-diameter while taking into account spatial and temporal variations in
-particle properties.
+In our AUV, a novel imaging camera \cite{Davies2017a} based on a
+transmittance imaging system, is embedded into the hull of the
+AUV. This onboard imaging enables in-situ time-series capture of
+magnified images of particles floating through an installed volume of
+\SI{55}{\micro\meter} diameter while taking into account spatial and
+temporal variations in particle properties.
 
 This stream of captured images is, in turn, input to object detection
-and classification pipeline that adopts deep machine learning (DL)
+and classification pipeline that uses deep machine learning (DL)
 approaches. The pipeline line starts with extracting and identifying
 the set of objects per image frame in the time-series. Then extracted
 objects are input to a classification module for further taxa
 identification and recognition by means of an embedded DL
 architecture.
 
-We exerted a thorough performance comparison between state-of-the-art
-DL architectures. Our selection criteria recommend the use of a simple
-5-convolutional-layers network since it outperforms the other DL
+We did a thorough performance comparison between state-of-the-art DL
+architectures. Our selection criteria demanded the use of a simple
+5-convolutional-layer network since it outperforms the other DL
 structures in terms of prediction speed, detection accuracy, and space
 in the memory. The accuracy achieved after training the network over a
 dataset of 7800 different images of planktonic organisms was $95.09\%$
@@ -172,9 +191,9 @@ and they are provided as an output of this process.
 
 \subsection{Spatio-Temporal modelling}
 %As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process.
-To enable mapping microbiological processes over time as they float
-with the current a local current model is used to predict the temporal
-movement of the biomass then Gaussian Process Regression/Kriging is
+To enable mapping microbiological processes over time as they float in
+the upper water-column, a local current model is used to predict the
+advection of the biomass. Gaussian Process Regression/Kriging is
 used to estimate a dense spatial distribution of the biomass.
 
 \paragraph{Local Current Model}
@@ -184,9 +203,8 @@ numerical hydrodynamic model
 %SINMOD \cite{slagstad2005}
 or accumulated during the mission from acoustic doppler current
 profiler (ADCP) measurements on the AUV.  A Lagrangian particle
-transport model, derived from previous and ongoing work at SINTEF
-\cite{Rye2006}, is run onboard the vehicle.  Particles are transported
-individually, using a variable-time step
+transport model \cite{Rye2006}, is run onboard the vehicle.  Particles
+are transported individually, using a variable-time step
 integrator %\cite{Dormand1980}
 through the current field, applying a random walk with the local
 diffusivity.
@@ -202,23 +220,24 @@ where the AUV should go next.
 %(\cmt{Cite. This is confusing; are you using a GP with the hydro-dynamic flow? I suspect what you want to say is, once a hot-spot has been identified, then to understand its spatial structure (size, extant and potentially as a result, the community (of the micro-organism) structure), one needs to do a GP (a la, work in Runde). Right?})
 \subsection{Path Generation with Heuristics}
 The goal is to find the path which maximises an objective function
-based on the estimated GP model.
-However allowing any kind
-of path requires a lot evaluations of the objective function. The
-search is made more efficient by utilising traditional survey paths as
-heuristics. E.g the standard square survey showed in
-Fig.~\ref{fig:munkholmen} is parameterised by the covered rectangle
-and its density, which is significantly fewer parameters to optimise
-compared to specifying each line individually.
+based on the estimated GP model.  However allowing any kind of path
+requires evaluation of the objective function. The search is made
+efficient by utilising traditional survey paths as heuristics. E.g the
+standard square survey shown in Fig.~\ref{fig:munkholmen} is
+parameterised by the covered rectangle and its density, which is
+significantly fewer parameters to optimise compared to specifying each
+line individually.
 %Bresenham's line algorithm
 
 The objective function is calculated over the estimated GP model along
-the path candidate. It is based on a combination of the following interests:
+the path candidate. It is based on a combination of the following
+interests:
+
 \begin{itemize}
     \item Scientific interest in particular plankton classes. 
-    \item Exploitation: maximise expected measured concentration per travelled distance
+    \item Exploitation: maximization of expected measured concentration per travelled distance
       according to the kriging surface. 
-    \item Exploration: minimise model variance per travelled distance by sampling from
+    \item Exploration: minimizing model variance per travelled distance by sampling from
       previously little visited areas.
     \item Lagrangian Tracking: Follow the biomass by following the estimated current.
 \end{itemize}
@@ -229,17 +248,18 @@ the AUV control and navigation software (DUNE) and mission control
 
 \section{Experimental Results}
 
-The system is being tested and developed in simulations and on historic
-data.
-The simulator is based on a numeric hydrodynamic model and is overall
-very similar to the estimation system on board the AUV, only larger scale.
-GP kernels, learned from historic data, are used to draw new simulated biomass which the simulated AUV draws measurements from. 
-Fig.~\ref{fig:munkholmen} shows the planned path based on historic
-data from a survey in the Trondheim fjord in April 2020, during an
-annual algae bloom. The planned path is maximising the expected
-concentration of detected algae, while also minimising the variance of
-the estimated Gaussian process.
-\cref{fig:Simulation} shows a larger simulation run from the same area, where the initial biomass concentration were extrapolated from the historic data.
+The system is being tested and developed in simulations and on past
+data.  The simulator is based on a numeric hydrodynamic model and is
+overall very similar to the estimation system on board the AUV, only
+larger scale.  GP kernels, learned from historic data, are used to
+draw new simulated biomass which the simulated AUV draws measurements
+from.  Fig.~\ref{fig:munkholmen} shows the planned path based on
+historic data from a survey in Trondheim fjord, Norway in April 2020,
+during an annual algae bloom. The planned path is maximising the
+expected concentration of detected algae, while also minimising the
+variance of the estimated Gaussian process.  \cref{fig:Simulation}
+shows a larger simulation run from the same area, where the initial
+biomass concentration were extrapolated from the historic data.
 
 \begin{figure}[tbp]
   \centering
@@ -256,10 +276,12 @@ the estimated Gaussian process.
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\linewidth]{figures/munkholmen_planned_path.png}
-  \caption{Historic data. The AUV has traversed the blue path and gathered data (orange points), which has been transported with the current, and are now
-    estimated to be located at the red points.  The contour shows the
-    predicted concentration for which the red path is maximizing
-    expected measured concentration and minimising model variance per travelled distance.}
+  \caption{Historic data. The AUV has traversed the blue path and
+    gathered data (orange points), which has been transported with the
+    current, and are now estimated to be located at the red points.
+    The contour shows the predicted concentration for which the red
+    path is maximizing expected measured concentration and minimizing
+    model variance per travelled distance.}
   \label{fig:munkholmen}
 \end{figure}
 
@@ -268,17 +290,26 @@ the estimated Gaussian process.
      \begin{subfigure}[b]{\linewidth}
          \centering
          \includegraphics[width=\textwidth]{figures/sim-estimate.png}
-         \caption{The contour shows the estimated concentration. The red path shows the chosen lawn-mover path used as a heuristic for speeding up the path search, and the blue shows the actual travelled path. The red points shows the predicted position of measurements which are fresh enough to still be taken into account.}
+         \caption{The contour shows the estimated concentration. The
+           red path shows the chosen lawn-mover path used as a
+           heuristic for speeding up the path search, and the blue
+           shows the actual travelled path. The red points shows the
+           predicted position of measurements which are fresh enough
+           to still be taken into account.}
          \label{fig:sim-estimation}
      \end{subfigure}
      \\
      \begin{subfigure}[b]{\linewidth}
          \centering
          \includegraphics[width=\textwidth]{figures/sim-gt.png}
-         \caption{The simulated biomass concentration from which the measurements are drawn. Ground truth is one of benefits from working with simulations.}
+         \caption{The simulated biomass concentration from which the
+           measurements are drawn. Ground truth is one of benefits
+           from working with simulations.}
          \label{fig:sim-gt}
      \end{subfigure}
-        \caption{Simulation results of a larger survey where the AUV first followes a predetermined lawn-mover path, then adaptively locates and sample measurements from the largest hot-spot.}
+     \caption{Simulation results of a larger survey where the AUV
+       first followes a predetermined lawn-mover path, then adaptively
+       locates and sample measurements from the largest hot-spot.}
         \label{fig:Simulation}
 \end{figure}
 
