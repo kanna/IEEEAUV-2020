@@ -84,8 +84,7 @@ approaches suggest our project, \proj (\textbf{A}utonomous
 \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
 identifying pla\textbf{N}kton taxa in-situ), an open source AUV
 framework that images, identifies, and measures targeted plankton
-spatial spread in-situ, akin to a ``sniffer dog''. If successful,
-a researchers can specify a search area, a set of plankton classes of interest and launch the AUV from shore. The AUV then performs an initial rough search over the area and adaptively maps the found targeted biology over time. At the end of the
+spatial spread in-situ, akin to a ``sniffer dog''. If successful, researchers can specify a search area, a set of plankton classes of interest and launch the AUV from shore. The AUV then performs an initial rough search over the area and adaptively maps the found targeted biology over time. At the end of the
 day the AUV returns to shore where it remotely is controlled in and picked up.
 
 In this paper we present the adaptive sampling algorithm, which based
@@ -113,9 +112,8 @@ current profiles \cite{Fong2006, Cusi2017}.
 
 \section{Technical Description}
 
-The overall data/control flow can be seen in
-\cref{fig:sensePlanActLoop}. The overalcommunication with human experts, choice of objective function for the path planner and resolution of the on board spatio-temporal biomass model are govern by a general planner. Which continuously 
-controls the path planner and the biomass model during execution. When plan generation and execution embedded on a robot is continuous, sensing of the robots environment
+A overview of the information flow can be seen in
+\cref{fig:sensePlanActLoop}. When plan generation and execution embedded on a robot is continuous, sensing of the robots environment
 updates the internal representations which could modify future actions
 with plan synthesis and in turn future actions.  In enabling this
 continuous \textbf{sense}, \textbf{plan} and \textbf{act} loop, the
@@ -126,7 +124,7 @@ cognitive capacity that most robotic vehicles to date, fall short of
 \begin{figure}[tbp]
 % \centerline{\includegraphics[width=0.8\linewidth]{figures/workflow-simplified.eps}}
 \centerline{\includegraphics[width=0.8\linewidth]{figures/workflow-simplified.jpg}}
-\caption{The overall control loop running on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements which again are used to update the plan.}
+\caption{The overall information flow on board the AUV in \proje. After accumulating the measurements into the models, a plan for further data collection is found. The AUV will then start executing the plan, and thus gather new measurements which again are used to update the plan.}
 \label{fig:sensePlanActLoop}
 \end{figure}
 
@@ -136,8 +134,7 @@ A novel imaging camera \cite{Davies2017a} based on a transmittance
 imaging system, is embedded into the hull of the AUV. This onboard
 imaging enables in-situ time-series capturing of magnified images of
 particles floating through an installed volume of \SI{55}{\micro\meter}
-diameter while taking into account spatial and temporal variations in
-particle properties.
+diameter.
 
 This stream of captured images is, in turn, input to object detection
 and classification pipeline that adopts deep machine learning (DL)
@@ -162,10 +159,8 @@ GoogleNet \cite{szegedy2015going} respectively.
 %The novel SILCAM has been implemented into the hull of an AUV.
 %It continuously captures magnified images of particles floating trough its capture volume.
 %The raw images are processed and classified by a state-of-the-art deep learning model on-board the AUV, resulting in a stream of detected particle classes along with prediction confidences.
-The chosen network architecture implemented for classification, in
-turn, predicts and interprets planktonic objects extracted from the
-time-series input raw images. Measurements of the different classes
-concentration, along with their corresponding variances, are inferred,
+Measurements of the different classes
+concentration, along with their corresponding variances, are inferred from the classification,
 and they are provided as an output of this process.
 %For now we only consider one feature at a time, i.e. the total concentration of particles, but extending the system to multiple classes is possible.
 %Also other observable processes then microbial biology could be monitored with the same system.
@@ -174,7 +169,7 @@ and they are provided as an output of this process.
 %As the spatial density of microbiology is not stationary, but changes over time we model it as spatio-temporal process.
 To enable mapping microbiological processes over time as they float
 with the current a local current model is used to predict the temporal
-movement of the biomass then Gaussian Process Regression/Kriging is
+movement of the biomass, then Gaussian Process Regression/Kriging is
 used to estimate a dense spatial distribution of the biomass.
 
 \paragraph{Local Current Model}
@@ -201,12 +196,7 @@ where the AUV should go next.
 
 %(\cmt{Cite. This is confusing; are you using a GP with the hydro-dynamic flow? I suspect what you want to say is, once a hot-spot has been identified, then to understand its spatial structure (size, extant and potentially as a result, the community (of the micro-organism) structure), one needs to do a GP (a la, work in Runde). Right?})
 \subsection{Path Generation with Heuristics}
-The goal is to find the path which maximises an objective function
-based on the estimated GP model.
-However allowing any kind
-of path requires a lot evaluations of the objective function. The
-search is made more efficient by utilising traditional survey paths as
-heuristics. E.g the standard square survey showed in
+The search for a path which maximises a given objective function based on the estimated GP model/Kriging surface, is made more efficient by utilising traditional survey paths as heuristics. E.g the standard square survey showed in
 Fig.~\ref{fig:munkholmen} is parameterised by the covered rectangle
 and its density, which is significantly fewer parameters to optimise
 compared to specifying each line individually.
@@ -241,7 +231,7 @@ concentration of detected algae, while also minimising the variance of
 the estimated Gaussian process.
 \cref{fig:Simulation} shows a larger simulation run from the same area, where the initial biomass concentration were extrapolated from the historic data.
 
-\begin{figure}[tbp]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figures/LAUV.jpg}
   \caption{The Light Autonomous Underwater Vehicle (LAUV)
@@ -253,7 +243,7 @@ the estimated Gaussian process.
   \label{fig:roald}
 \end{figure}
 
-\begin{figure}[tbp]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figures/munkholmen_planned_path.png}
   \caption{Historic data. The AUV has traversed the blue path and gathered data (orange points), which has been transported with the current, and are now
@@ -263,16 +253,16 @@ the estimated Gaussian process.
   \label{fig:munkholmen}
 \end{figure}
 
-\begin{figure}[tbp]
+\begin{figure}[t]
      \centering
-     \begin{subfigure}[b]{\linewidth}
+     \begin{subfigure}[htb]{\linewidth}
          \centering
          \includegraphics[width=\textwidth]{figures/sim-estimate.png}
          \caption{The contour shows the estimated concentration. The red path shows the chosen lawn-mover path used as a heuristic for speeding up the path search, and the blue shows the actual travelled path. The red points shows the predicted position of measurements which are fresh enough to still be taken into account.}
          \label{fig:sim-estimation}
      \end{subfigure}
      \\
-     \begin{subfigure}[b]{\linewidth}
+     \begin{subfigure}[htb]{\linewidth}
          \centering
          \includegraphics[width=\textwidth]{figures/sim-gt.png}
          \caption{The simulated biomass concentration from which the measurements are drawn. Ground truth is one of benefits from working with simulations.}
