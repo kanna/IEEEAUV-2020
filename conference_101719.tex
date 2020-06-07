@@ -1,6 +1,8 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{cleveref}
@@ -82,10 +84,9 @@ approaches suggest our project, \proj (\textbf{A}utonomous
 \textbf{I}maging and \textbf{L}earning \textbf{A}i \textbf{RO}bot
 identifying pla\textbf{N}kton taxa in-situ), an open source AUV
 framework that images, identifies, and measures targeted plankton
-spatial spread in-situ, akin to a ``sniffer dog''.  Then, it
-adaptively plans for mapping the spatial distribution of biomass
-combining exploration of the unknown and exploitation of the already
-discovered interesting biology.
+spatial spread in-situ, akin to a ``sniffer dog''. If successful,
+a researchers can specify a search area, a set of plankton classes of interest and launch the AUV from shore. The AUV then performs an initial rough search over the area and adaptively maps the found targeted biology over time. At the end of the
+day the AUV returns to shore where it remotely is controlled in and picked up.
 
 In this paper we present the adaptive sampling algorithm, which based
 on input from the on board imaging and deep learning classification
@@ -113,8 +114,8 @@ current profiles \cite{Fong2006, Cusi2017}.
 \section{Technical Description}
 
 The overall data/control flow can be seen in
-\cref{fig:sensePlanActLoop}.  When plan generation and execution
-embedded on a robot is continuous, sensing of the robots environment
+\cref{fig:sensePlanActLoop}. The overalcommunication with human experts, choice of objective function for the path planner and resolution of the on board spatio-temporal biomass model are govern by a general planner. Which continuously 
+controls the path planner and the biomass model during execution. When plan generation and execution embedded on a robot is continuous, sensing of the robots environment
 updates the internal representations which could modify future actions
 with plan synthesis and in turn future actions.  In enabling this
 continuous \textbf{sense}, \textbf{plan} and \textbf{act} loop, the
@@ -212,14 +213,14 @@ compared to specifying each line individually.
 %Bresenham's line algorithm
 
 The objective function is calculated over the estimated GP model along
-the path candidate. It is based on three interests:
-
+the path candidate. It is based on a combination of the following interests:
 \begin{itemize}
     \item Scientific interest in particular plankton classes. 
     \item Exploitation: maximise expected measured concentration per travelled distance
       according to the kriging surface. 
     \item Exploration: minimise model variance per travelled distance by sampling from
       previously little visited areas.
+    \item Lagrangian Tracking: Follow the biomass by following the estimated current.
 \end{itemize}
 %(\cmt{This is very abrupt. You want to say where the GP is being used, but after you talk about the plan-exec, since it is the plan-exec component which determines when to activate the GP and modify the kernel. There should be a nice flow between when you introduce the GP with the rest of the para's below. And after Plan/Exec.}).
 All code is open source and based on open source projects. Including
@@ -228,12 +229,17 @@ the AUV control and navigation software (DUNE) and mission control
 
 \section{Experimental Results}
 
-The system has been tested and verified in simulations and on historic
-data. Fig.~\ref{fig:munkholmen} shows the planned path based on historic
+The system is being tested and developed in simulations and on historic
+data.
+The simulator is based on a numeric hydrodynamic model and is overall
+very similar to the estimation system on board the AUV, only larger scale.
+GP kernels, learned from historic data, are used to draw new simulated biomass which the simulated AUV draws measurements from. 
+Fig.~\ref{fig:munkholmen} shows the planned path based on historic
 data from a survey in the Trondheim fjord in April 2020, during an
 annual algae bloom. The planned path is maximising the expected
 concentration of detected algae, while also minimising the variance of
 the estimated Gaussian process.
+\cref{fig:Simulation} shows a larger simulation run from the same area, where the initial biomass concentration were extrapolated from the historic data.
 
 \begin{figure}[tbp]
   \centering
@@ -250,12 +256,30 @@ the estimated Gaussian process.
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\linewidth]{figures/munkholmen_planned_path.png}
-  \caption{The AUV has traversed the blue path and gathered data (orange
-    points), which has been transported with the current, and are now
+  \caption{Historic data. The AUV has traversed the blue path and gathered data (orange points), which has been transported with the current, and are now
     estimated to be located at the red points.  The contour shows the
     predicted concentration for which the red path is maximizing
     expected measured concentration and minimising model variance per travelled distance.}
   \label{fig:munkholmen}
+\end{figure}
+
+\begin{figure}[tbp]
+     \centering
+     \begin{subfigure}[b]{\linewidth}
+         \centering
+         \includegraphics[width=\textwidth]{figures/sim-estimate.png}
+         \caption{The contour shows the estimated concentration. The red path shows the chosen lawn-mover path used as a heuristic for speeding up the path search, and the blue shows the actual travelled path. The red points shows the predicted position of measurements which are fresh enough to still be taken into account.}
+         \label{fig:sim-estimation}
+     \end{subfigure}
+     \\
+     \begin{subfigure}[b]{\linewidth}
+         \centering
+         \includegraphics[width=\textwidth]{figures/sim-gt.png}
+         \caption{The simulated biomass concentration from which the measurements are drawn. Ground truth is one of benefits from working with simulations.}
+         \label{fig:sim-gt}
+     \end{subfigure}
+        \caption{Simulation results of a larger survey where the AUV first followes a predetermined lawn-mover path, then adaptively locates and sample measurements from the largest hot-spot.}
+        \label{fig:Simulation}
 \end{figure}
 
 %Future steps include experimentation with the AUV operating autonomously in open waters.
